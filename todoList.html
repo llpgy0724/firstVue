@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>作业</title>
+    <meta charset="UTF-8">
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+        
+        ul,
+        li {
+            list-style: none;
+        }
+        
+        #app {
+            width: 340px;
+            border: 1px solid #fff;
+            box-shadow: 0 0 25px #777;
+            margin: 30px auto;
+            padding: 10px 0;
+        }
+        
+        h2 {
+            padding: 10px 0;
+        }
+        
+        .add-top {
+            margin: 10px 0 20px;
+        }
+        
+        #app button {
+            padding: 3px 10px;
+            background-color: #fff;
+            border: 1px solid #777;
+            border-radius: 3px;
+        }
+        
+        #app button:hover {
+            cursor: pointer;
+        }
+        
+        #app ul {
+            padding: 0 20px 0 40px;
+        }
+        
+        #app ul li {
+            margin: 15px 0;
+            height: 25px;
+        }
+        
+        #app ul li button {
+            float: right;
+            height: 25px;
+        }
+        
+        #app ul li button {
+            margin-left: 3px;
+        }
+        
+        .add-top {
+            text-align: center;
+        }
+        
+        .add-top input {
+            border-left: none;
+            border-top: none;
+            border-right: none;
+            outline: none;
+        }
+        
+        #app input[type="checkbox"] {
+            color: #fff;
+            background-color: blue;
+        }
+        
+        #app ul li input[type="text"] {
+            border: none;
+            border-bottom: 1px solid #eee;
+            outline: none;
+            width: 140px;
+            font-size: 15px;
+        }
+        
+        .completed {
+            text-decoration: line-through;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="add-top">
+            <h2>剩余待办: {{todoTotal}}条</h2>
+            <input class="add" type="text" v-model.trim="todoNew">
+            <button @click="todoAdd">添加</button>
+        </div>
+        <ul>
+            <li v-for="(todo,index) in todoList">
+                <input type="checkbox" id="'todo'+index" :key="index" v-model="todo.completed">
+                <input type="text" v-if="todo.editable" v-model="todo.text">
+                <label v-else for="'todo'+index" :class="{completed:todo.completed}">{{todo.text}}</label>
+                <button @click="todoRemove(index)" :disabled="todo.editable">删除</button>
+                <button @click="editTodo(index)">{{ todo.editable | editShow }}</button>
+            </li>
+        </ul>
+    </div>
+</body>
+<script>
+    var active = function(todos) {
+        return todos.filter(function(todo) {
+            return !todo.completed
+        })
+    }
+    var vm = new Vue({
+        el: '#app',
+        data: {
+            divheight: '300',
+            todoNew: '',
+            todoList: [{
+                text: '吃饭',
+                completed: false,
+                editable: false
+            }, {
+                text: '洗碗',
+                completed: false,
+                editable: false
+            }, {
+                text: '睡觉',
+                completed: true,
+                editable: false
+            }, {
+                text: '做作业',
+                completed: false,
+                editable: false
+            }]
+        },
+        methods: {
+            todoAdd: function() {
+                if (this.todoNew) {
+                    this.todoList.push({
+                        text: this.todoNew,
+                        completed: false,
+                        editable: false
+                    })
+                    this.todoNew = ''
+                }
+            },
+            todoRemove: function(index) {
+                this.todoList.splice(index, 1);
+            },
+            editTodo: function(index) {
+                this.todoList[index].editable = !this.todoList[index].editable;
+            }
+        },
+        filters: {
+            editShow: function(value) {
+                return value ? '确认' : '编辑';
+            }
+        },
+        computed: {
+            todoTotal: function() {
+                var actives = active(this.todoList);
+                return actives.length;
+            }
+        }
+    })
+</script>
+
+</html>
